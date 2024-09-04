@@ -1,7 +1,7 @@
 import os
 import json
-from regression_indicators import process_regression_indicator
-from network_indicators import process_search_trajectory_network
+from behavioural_benchmark.regression_indicators import process_regression_indicator
+from behavioural_benchmark.network_indicators import process_search_trajectory_network, process_interaction_network
 
 class MemoisedIndicators:
 
@@ -41,7 +41,7 @@ class MemoisedIndicators:
             return int(data["fitness_evaluations"]), int(data["total_iterations"]), \
                 float(data["infeasible_iterations"]), float(data["global_best_fitness"]), int(data["solution_index"])
 
-    def process_diversity(self):
+    def __process_diversity(self):
         self.DRoC, self.CRoC = process_regression_indicator(
             f"{self.path}/diversity.csv",
             x_label="iteration",
@@ -50,7 +50,7 @@ class MemoisedIndicators:
         )
         return self.DRoC, self.CRoC
 
-    def process_distance(self):
+    def __process_distance(self):
         self.ARoC_A, self.LRoC_A = process_regression_indicator(
             f"{self.path}/distance.csv",
             x_label="iteration",
@@ -59,7 +59,7 @@ class MemoisedIndicators:
         )
         return self.ARoC_A, self.LRoC_A
 
-    def process_value_from_best(self):
+    def __process_value_from_best(self):
         self.ARoC_B, self.LRoC_B = process_regression_indicator(
             f"{self.path}/value.csv",
             x_label="iteration",
@@ -68,30 +68,62 @@ class MemoisedIndicators:
         )
         return self.ARoC_B, self.LRoC_B
 
-    def process_trajectories(self):
-        self.ntotal, self.nshared = process_search_trajectory_network(f"{self.path}/stn.csv", self.global_best_fitness)
+    def __process_trajectories(self):
+        self.ntotal, self.nshared = process_search_trajectory_network(
+            filepath=f"{self.path}/stn.csv",
+            global_best_fitness=self.global_best_fitness
+        )
         return self.ntotal, self.nshared
 
+    def __process_interactions(self):
+        self.IDRoC, self.ISS = process_interaction_network(
+            filepath=f"{self.path}/interaction.txt",
+            solution_index=self.solution_index,
+            total_iterations=self.total_iterations
+        )
+        return self.IDRoC, self.ISS
+
     def DRoC(self):
-        return self.DRoC if self.DRoC else self.process_diversity()[0]
+        return self.DRoC if self.DRoC else self.__process_diversity()[0]
 
     def CRoC(self):
-        return self.CRoC if self.CRoC else self.process_diversity()[1]
+        return self.CRoC if self.CRoC else self.__process_diversity()[1]
 
     def ARoC_A(self):
-        return self.ARoC_A if self.ARoC_A else self.process_distance()[0]
+        return self.ARoC_A if self.ARoC_A else self.__process_distance()[0]
 
     def ARoC_B(self):
-        return self.ARoC_B if self.ARoC_B else self.process_value_from_best()[0]
+        return self.ARoC_B if self.ARoC_B else self.__process_value_from_best()[0]
 
     def LRoC_A(self):
-        return self.LRoC_A if self.LRoC_A else self.process_distance()[0]
+        return self.LRoC_A if self.LRoC_A else self.__process_distance()[0]
 
     def LRoC_B(self):
-        return self.LRoC_B if self.LRoC_B else self.process_value_from_best()[0]
+        return self.LRoC_B if self.LRoC_B else self.__process_value_from_best()[0]
 
     def ntotal(self):
-        return self.ntotal if self.ntotal else self.process_trajectories()[0]
+        return self.ntotal if self.ntotal else self.__process_trajectories()[0]
 
     def nshared(self):
-        return self.nshared if self.nshared else self.process_trajectories()[1]
+        return self.nshared if self.nshared else self.__process_trajectories()[1]
+
+    def IDRoC(self):
+        return self.IDRoC if self.IDRoC else self.__process_interactions()[0]
+
+    def ISS(self):
+        return self.ISS if self.ISS else self.__process_interactions()[1]
+
+    def ENES(self):
+        if self.ENES:
+            return self.ENES
+        else:
+            self.ENES = self.total_fitness_evaluations / self.total_iterations
+            return self.ENES
+
+    def INFEASIBLE_Percent(self):
+        if self.INFEASIBLE_Percent:
+            return self.INFEASIBLE_Percent
+        else:
+            self.INFEASIBLE_Percent = self.infeasible_iterations / self.total_iterations
+            return self.INFEASIBLE_Percent
+
