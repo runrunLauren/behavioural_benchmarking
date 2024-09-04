@@ -83,44 +83,44 @@ class MemoisedIndicators:
         )
         return self.IDRoC, self.ISS
 
-    def DRoC(self):
+    def get_DRoC(self) -> float:
         return self.DRoC if self.DRoC else self.__process_diversity()[0]
 
-    def CRoC(self):
+    def get_CRoC(self) -> float:
         return self.CRoC if self.CRoC else self.__process_diversity()[1]
 
-    def ARoC_A(self):
+    def get_ARoC_A(self) -> float:
         return self.ARoC_A if self.ARoC_A else self.__process_distance()[0]
 
-    def ARoC_B(self):
+    def get_ARoC_B(self) -> float:
         return self.ARoC_B if self.ARoC_B else self.__process_value_from_best()[0]
 
-    def LRoC_A(self):
+    def get_LRoC_A(self) -> float:
         return self.LRoC_A if self.LRoC_A else self.__process_distance()[0]
 
-    def LRoC_B(self):
+    def get_LRoC_B(self) -> float:
         return self.LRoC_B if self.LRoC_B else self.__process_value_from_best()[0]
 
-    def ntotal(self):
+    def get_ntotal(self):
         return self.ntotal if self.ntotal else self.__process_trajectories()[0]
 
-    def nshared(self):
+    def get_nshared(self) -> float:
         return self.nshared if self.nshared else self.__process_trajectories()[1]
 
-    def IDRoC(self):
+    def get_IDRoC(self) -> float:
         return self.IDRoC if self.IDRoC else self.__process_interactions()[0]
 
-    def ISS(self):
+    def get_ISS(self) -> float:
         return self.ISS if self.ISS else self.__process_interactions()[1]
 
-    def ENES(self):
+    def get_ENES(self) -> float:
         if self.ENES:
             return self.ENES
         else:
             self.ENES = self.total_fitness_evaluations / self.total_iterations
             return self.ENES
 
-    def INFEASIBLE_Percent(self):
+    def get_INFEASIBLE_Percent(self) -> float:
         if self.INFEASIBLE_Percent:
             return self.INFEASIBLE_Percent
         else:
