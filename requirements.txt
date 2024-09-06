@@ -1,0 +1,9 @@
+git+https://github.com/runrunLauren/swarm_interaction_network@master
+stnpy
+numpy
+pwlf
+pandas
+jupyter
+igraph
+scikit-learn
+matplotlib
