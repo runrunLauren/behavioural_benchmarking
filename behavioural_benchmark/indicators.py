@@ -2,6 +2,7 @@ import os
 import json
 from behavioural_benchmark.regression_indicators import process_regression_indicator
 from behavioural_benchmark.network_indicators import process_search_trajectory_network, process_interaction_network
+from behavioural_benchmark.mean_indicators import explore_percent, infeasible_percent
 
 class MemoisedIndicators:
 
@@ -49,7 +50,7 @@ class MemoisedIndicators:
         self.SNID = None  # Solution Node in-degree
 
         # Others
-        self.XPL_Percent = None  # Exploring Percent
+        self.EXPLORE_Percent = None  # Exploring Percent
         self.ENES = None  # Average number of objective function evaluations
         self.INFEASIBLE_Percent = None  # Share of time spent in infeasible space
 
@@ -110,8 +111,13 @@ class MemoisedIndicators:
         )
         return self.MID, self.MGC, self.SNID
 
-    def __process_diversity_alternate(self):
-        "TODO"
+    def __process_xpl_percent(self):
+        self.EXPLORE_Percent = explore_percent(filepath=f"{self.path}/diversity.csv")
+        return self.EXPLORE_Percent
+
+    def __process_f_percent(self):
+        self.INFEASIBLE_Percent = infeasible_percent(filepath=f"{self.path}/f_percent.csv")
+        return self.INFEASIBLE_Percent
 
     def get_DRoC_A(self) -> float:
         return self.DRoC_A if self.DRoC_A else self.__process_diversity()[0]
@@ -182,10 +188,11 @@ class MemoisedIndicators:
     def get_SNID(self) -> float:
         return self.SNID if self.SNID else self.__process_interactions()[2]
 
-    def get_XPL_Percent(self) -> float:
-        return self.XPL_Percent if self.XPL_Percent else self.__process_diversity_alternate()
+    def get_EXPLORE_Percent(self) -> float:
+        return self.EXPLORE_Percent if self.EXPLORE_Percent else self.__process_xpl_percent()
 
     def get_ENES(self) -> float:
+        "TODO this needs to be adjusted to be stop at near enough"
         if self.ENES:
             return self.ENES
         else:
@@ -193,9 +200,5 @@ class MemoisedIndicators:
             return self.ENES
 
     def get_INFEASIBLE_Percent(self) -> float:
-        if self.INFEASIBLE_Percent:
-            return self.INFEASIBLE_Percent
-        else:
-            self.INFEASIBLE_Percent = self.infeasible_iterations / self.total_iterations
-            return self.INFEASIBLE_Percent
+        return self.INFEASIBLE_Percent if self.INFEASIBLE_Percent else self.__process_f_percent()
 
