@@ -34,7 +34,7 @@ def process_interaction_network(filepath: str, solution_index: int, total_iterat
     :return: mean interaction diversity, mean giant component, and the in-degree of the solution node
     """
     graph = SwarmAnalyzer.create_influence_graph(filepath, window_size=1, calculate_on=1)
-    graph.es['weight'] = [w / (2 * 10) for w in graph.es['weight']]
+    graph.es['weight'] = [w / (2 * total_iterations) for w in graph.es['weight']]
 
     # Interaction Diversity
     number_of_components = GiantComponentDeath.low_edges_weight_removal(igraph_graph=graph, count='components')[0]

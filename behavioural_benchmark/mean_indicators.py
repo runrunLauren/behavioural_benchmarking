@@ -8,7 +8,7 @@ def explore_percent(filepath: str):
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     df.dropna(axis=0, how='any', inplace=True)
 
-    div_max = df['diversity'].max(axis='columns')
+    div_max = max(df['diversity'])
     df['xpl_percent'] = df['diversity'] / div_max * 100
     return df['xpl_percent'].mean()
 
@@ -17,6 +17,6 @@ def infeasible_percent(filepath: str):
     Takes the F% (calculated while running experiments) and returns the mean
     """
     df = pd.read_csv(filepath, engine='c', encoding="utf-8-sig")
-    return df['f%'].mean()
+    return df['f_percent'].mean()
 
 

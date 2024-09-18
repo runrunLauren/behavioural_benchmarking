@@ -11,8 +11,8 @@ class MemoisedIndicators:
         assert os.path.isdir(path)
         self.path = path
         self.plot = plot
-        self.total_fitness_evaluations, self.total_iterations, self.infeasible_iterations, self.global_best_fitness, \
-            self.solution_index = self.__parse_metadata()
+        self.fitness_evaluations_before_target, self.iterations_before_target, self.total_iterations, \
+            self.global_best_fitness, self.solution_index = self.__parse_metadata()
 
         # Diversity
         self.DRoC_A = None  # Diversity Rate of Change Type A
@@ -57,8 +57,8 @@ class MemoisedIndicators:
     def __parse_metadata(self) -> (int, float, int):
         with (open(f"{self.path}/metadata.json", "r") as f):
             data = json.load(f)
-            return int(data["fitness_evaluations"]), int(data["total_iterations"]), \
-                float(data["infeasible_iterations"]), float(data["global_best_fitness"]), int(data["solution_index"])
+            return int(data["fitness_evaluations_before_target"]), int(data["iterations_before_target"]), \
+                int(data["total_iterations"]), float(data["global_best_fitness"]), int(data["solution_index"])
 
     def __process_diversity(self):
         self.DRoC_A, self.DRoC_B, self.ERT_Diversity, self.Critical_Diversity = process_regression_indicator(
@@ -110,14 +110,6 @@ class MemoisedIndicators:
             total_iterations=self.total_iterations
         )
         return self.MID, self.MGC, self.SNID
-
-    def __process_xpl_percent(self):
-        self.EXPLORE_Percent = explore_percent(filepath=f"{self.path}/diversity.csv")
-        return self.EXPLORE_Percent
-
-    def __process_f_percent(self):
-        self.INFEASIBLE_Percent = infeasible_percent(filepath=f"{self.path}/f_percent.csv")
-        return self.INFEASIBLE_Percent
 
     def get_DRoC_A(self) -> float:
         return self.DRoC_A if self.DRoC_A else self.__process_diversity()[0]
@@ -189,16 +181,23 @@ class MemoisedIndicators:
         return self.SNID if self.SNID else self.__process_interactions()[2]
 
     def get_EXPLORE_Percent(self) -> float:
-        return self.EXPLORE_Percent if self.EXPLORE_Percent else self.__process_xpl_percent()
+        if self.EXPLORE_Percent:
+            return self.EXPLORE_Percent
+        else:
+            self.EXPLORE_Percent = explore_percent(filepath=f"{self.path}/diversity.csv")
+            return self.EXPLORE_Percent
 
     def get_ENES(self) -> float:
-        "TODO this needs to be adjusted to be stop at near enough"
         if self.ENES:
             return self.ENES
         else:
-            self.ENES = self.total_fitness_evaluations / self.total_iterations
+            self.ENES = self.fitness_evaluations_before_target / self.iterations_before_target
             return self.ENES
 
     def get_INFEASIBLE_Percent(self) -> float:
-        return self.INFEASIBLE_Percent if self.INFEASIBLE_Percent else self.__process_f_percent()
+        if self.INFEASIBLE_Percent:
+            return self.INFEASIBLE_Percent
+        else:
+            self.INFEASIBLE_Percent = infeasible_percent(filepath=f"{self.path}/f_percent.csv")
+            return self.INFEASIBLE_Percent
 
