@@ -7,7 +7,8 @@ import pandas as pd
 def process_regression_indicator(filepath: str, x_label: str, y_label: str, slope_indices: List[int]) \
         -> List[float]:
     """
-    Calculates any of the regression-based indicators, namely DRoC_A, DRoC_B, ARoC-A, ARoC-B, LRoC-A, and LRoC-B.
+    Calculates any of the regression-based indicators, namely DRoC_A, DRoC_B, FRoC-A, FRoC-B, SRoC-A, SRoC-B, MRoC-A,
+    and MRoC-B.
 
     :param filepath: the path to the csv file which the regression will be built on
     :param x_label: the name of the column in the csv file denoting the change in time
