@@ -6,13 +6,11 @@ from behavioural_benchmark.mean_indicators import explore_percent, infeasible_pe
 
 class MemoisedIndicators:
 
-    def __init__(self, path, plot=False):
+    def __init__(self, path):
         # root of data files
         assert os.path.isdir(path)
         self.path = path
-        self.plot = plot
-        self.fitness_evaluations_before_target, self.iterations_before_target, self.total_iterations, \
-            self.global_best_fitness, self.solution_index = self.__parse_metadata()
+        self.total_iterations, self.global_best_fitness, self.solution_index = self.__parse_metadata()
 
         # Diversity
         self.DRoC_A = None  # Diversity Rate of Change Type A
@@ -51,14 +49,12 @@ class MemoisedIndicators:
 
         # Others
         self.EXPLORE_Percent = None  # Exploring Percent
-        self.ENES = None  # Average number of objective function evaluations
         self.INFEASIBLE_Percent = None  # Share of time spent in infeasible space
 
     def __parse_metadata(self) -> (int, float, int):
         with (open(f"{self.path}/metadata.json", "r") as f):
             data = json.load(f)
-            return int(data["fitness_evaluations_before_target"]), int(data["iterations_before_target"]), \
-                int(data["total_iterations"]), float(data["global_best_fitness"]), int(data["solution_index"])
+            return int(data["total_iterations"]), float(data["global_best_fitness"]), int(data["solution_index"])
 
     def __process_diversity(self):
         self.DRoC_A, self.DRoC_B, self.ERT_Diversity, self.Critical_Diversity = process_regression_indicator(
@@ -71,9 +67,9 @@ class MemoisedIndicators:
 
     def __process_separation_delta(self):
         self.SRoC_A, self.SRoC_B, self.ERT_Separation, self.Critical_Separation = process_regression_indicator(
-            f"{self.path}/distance.csv",
+            f"{self.path}/separation.csv",
             x_label="iteration",
-            y_label="distance",
+            y_label="separation",
             slope_indices=[0, 1]
         )
         return self.SRoC_A, self.SRoC_B, self.ERT_Separation, self.Critical_Separation
@@ -105,7 +101,7 @@ class MemoisedIndicators:
 
     def __process_interactions(self):
         self.MID, self.MGC, self.SNID = process_interaction_network(
-            filepath=f"{self.path}/interaction.txt",
+            filepath=f"{self.path}/interaction_network.txt",
             solution_index=self.solution_index,
             total_iterations=self.total_iterations
         )
@@ -186,13 +182,6 @@ class MemoisedIndicators:
         else:
             self.EXPLORE_Percent = explore_percent(filepath=f"{self.path}/diversity.csv")
             return self.EXPLORE_Percent
-
-    def get_ENES(self) -> float:
-        if self.ENES:
-            return self.ENES
-        else:
-            self.ENES = self.fitness_evaluations_before_target / self.iterations_before_target
-            return self.ENES
 
     def get_INFEASIBLE_Percent(self) -> float:
         if self.INFEASIBLE_Percent:
