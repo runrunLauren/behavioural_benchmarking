@@ -7,3 +7,5 @@ jupyter
 igraph
 scikit-learn
 matplotlib
+seaborn
+scipy
