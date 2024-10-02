@@ -61,9 +61,9 @@ class MemoisedIndicators:
 
     def __process_value_from_best(self):
         self.ARoC_B, self.LRoC_B = process_regression_indicator(
-            f"{self.path}/value.csv",
+            f"{self.path}/fitness.csv",
             x_label="iteration",
-            y_label="value",
+            y_label="fitness",
             slope_indices=[0, 1]
         )
         return self.ARoC_B, self.LRoC_B

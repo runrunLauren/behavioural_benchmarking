@@ -5,19 +5,8 @@ import pwlf
 import pandas as pd
 
 
-def linear_slopes(regression_model: pwlf.PiecewiseLinFit) -> np.ndarray[np.float64]:
-    """
-    Calculates the slopes of the lines of a two-piecewise linear regression
-
-    :param regression_model: a regression model of the type PiecewiseLinFit of pwlf
-    :return: slopes of the lines of a two-piecewise linear regression
-    """
-    _ = regression_model.fit(2)
-    slopes = regression_model.calc_slopes()
-    return slopes
-
 def process_regression_indicator(filepath: str, x_label: str, y_label: str, slope_indices: List[int]) \
-        -> np.ndarray[np.float64]:
+        -> List[float]:
     """
     Calculates any of the regression-based indicators, namely DRoC, CRoC, ARoC-A, ARoC-B, LRoC-A, and LRoC-B.
 
@@ -34,9 +23,18 @@ def process_regression_indicator(filepath: str, x_label: str, y_label: str, slop
     y = df[y_label]
 
     regression_model = pwlf.PiecewiseLinFit(x, y)
-    slopes = linear_slopes(regression_model)
+    slopes = __linear_slopes(regression_model)
 
-    return slopes[slope_indices]
+    return [float(i) for i in slopes[slope_indices]]
 
+def __linear_slopes(regression_model: pwlf.PiecewiseLinFit) -> np.ndarray[np.float64]:
+    """
+    Calculates the slopes of the lines of a two-piecewise linear regression
 
+    :param regression_model: a regression model of the type PiecewiseLinFit of pwlf
+    :return: slopes of the lines of a two-piecewise linear regression
+    """
+    _ = regression_model.fit(2)
+    slopes = regression_model.calc_slopes()
+    return slopes
 

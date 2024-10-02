@@ -1,3 +1,1 @@
-{
-"fitness_evaluations": "30030", "total_iterations": "1000", "infeasible_iterations": "33.533167", "solution_index": "10", "global_best_fitness": "0.0"
-}
+{"total_iterations": 10, "fitness_evaluations": 50, "infeasible_iterations": 10, "global_best_fitness": 0, "solution_index": 3}

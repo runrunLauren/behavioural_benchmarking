@@ -1,12 +1,11 @@
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-import igraph
 from stnpy import stn
 from swarm_interaction_network.swarm_analyzer import SwarmAnalyzer
 from swarm_interaction_network.giant_component_analysis import GiantComponentDeath
 
 
-def process_search_trajectory_network(filepath: str, global_best_fitness: float) -> (int, int):
+def process_search_trajectory_network(filepath: str, global_best_fitness: float) -> (int, int, pd.DataFrame):
     """
     Creates a search trajectory network (STN) from a series of search trajectories. Return the number of nodes in the
     STN, and the number of nodes that are shared in the STN.
@@ -31,12 +30,12 @@ def process_interaction_network(filepath: str, solution_index: int, total_iterat
     :param total_iterations: the number of iterations the optimisation ran for
     :return: rate of change in interaction diversity, and the weight of the solution node
     """
-    graph: igraph.Graph = SwarmAnalyzer.create_influence_graph(filepath, window_size=1, calculate_on=1)
-
     # Interaction Diversity Rate of Change
+    graph = SwarmAnalyzer.create_influence_graph(filepath, window_size=1, calculate_on=1)
     number_of_components = GiantComponentDeath.low_edges_weight_removal(igraph_graph=graph, count='components')[0]
     norm_number_of_components = __normalise(number_of_components, total_iterations)
     trim_norm_number_of_components = __trim_start(norm_number_of_components, 1)
+
     model = LinearRegression()
     model.fit(
         trim_norm_number_of_components['x'].to_numpy().reshape(-1, 1),
@@ -46,7 +45,7 @@ def process_interaction_network(filepath: str, solution_index: int, total_iterat
 
     # ISS
     influence_strength_of_solution = graph.strength(solution_index, weights="weight") / (2 * total_iterations)
-    return interaction_diversity_rate_of_change, influence_strength_of_solution
+    return float(interaction_diversity_rate_of_change), float(influence_strength_of_solution)
 
 
 def __normalise(data: pd.DataFrame, t: int) -> pd.DataFrame:
@@ -54,7 +53,7 @@ def __normalise(data: pd.DataFrame, t: int) -> pd.DataFrame:
     Divides the weight of each node with the maximum possible weight. The maximum possible weight is twice the number of
     iterations that took place.
     """
-    data['x'] = data['x'].apply(lambda x: x / (2 * t))
+    data['x'] /= 2 * t
     return data
 
 def __trim_start(data: pd.DataFrame, start_value: int) -> pd.DataFrame:
