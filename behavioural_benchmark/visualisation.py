@@ -1,14 +1,17 @@
 from typing import List, Dict
 import pandas as pd
+from matplotlib import pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 import seaborn as sns
+sns.set_style("white")
+
 
 class Visualisation:
     def __init__(self, data: pd.DataFrame, identifier_header="metaheuristic"):
         self.data = data
         self.identifier_header = identifier_header
 
-    def cartesian_visualisation(
+    def kde_visualisation(
             self,
             columns: List[str],
             filters: Dict[str, List[str]],
@@ -17,12 +20,10 @@ class Visualisation:
     ):
         assert len(columns) > 0
         prepped_data = self.__prep_data__(columns, filters, exclude_outliers, normalise)
-        if len(columns) == 3:
-            self.__visualise_3d__(prepped_data, column_1=columns[0], column_2=columns[1], column_3=columns[2])
-        elif len(columns) == 2:
-            self.__visualise_2d__(prepped_data, column_1=columns[0], column_2=columns[1])
+        if len(columns) == 2:
+            self.__kde_visualise_2d__(prepped_data, column_1=columns[0], column_2=columns[1])
         elif len(columns) == 1:
-            self.__visualise_1d__(prepped_data, columns[0])
+            self.__kde_visualise_1d__(prepped_data, columns[0])
         else:
             print("This style of visualisation is only available for up to three columns")
 
@@ -67,12 +68,18 @@ class Visualisation:
 
         return prepped_data
 
-    def __visualise_1d__(self, data: pd.DataFrame, column: str):
-        sns.histplot(x=column, data=data, hue=self.identifier_header, element='poly')
+    def __kde_visualise_1d__(self, data: pd.DataFrame, column: str):
+        fig, ax = plt.subplots()
+        sns.kdeplot(x=column, data=data, hue=self.identifier_header, ax=ax, legend=False, fill=True, linewidth=0)
+        sns.rugplot(x=column, data=data, hue=self.identifier_header, ax=ax, legend=True, height=0.1)
+        ax.set_yticks([])
+        ax.set_ylabel('')
+        plt.show()
 
-    def __visualise_2d__(self, data:pd.DataFrame, column_1: str, column_2: str):
-        print("todo")
-
-    def __visualise_3d__(self, data: pd.DataFrame, column_1: str, column_2: str, column_3: str):
-        print("todo")
+    def __kde_visualise_2d__(self, data:pd.DataFrame, column_1: str, column_2: str):
+        fig, ax = plt.subplots()
+        sns.kdeplot(x=column_1, y=column_2, data=data, hue=self.identifier_header, fill=True, alpha=.3, ax=ax,
+                    bw_adjust=1, levels=2)
+        sns.scatterplot(x='col_1', y='col_2', data=data, hue='metaheuristic', ax=ax)
+        plt.show()
 
