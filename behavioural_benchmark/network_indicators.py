@@ -11,12 +11,13 @@ def process_search_trajectory_network(filepath: str, global_best_fitness: float)
 
     :param filepath: the path to the csv file of trajectory information
     :param global_best_fitness: the best fitness value known in the optimisation space
-    :return: the total number of nodes in the STN, the total number of shared nodes in the STN
+    :return: the total number of nodes in the STN, the total number of optimal nodes in the STN, the total number of
+    shared nodes in the STN, and the sum of the in-degree of the optimal nodes
     """
     g = stn.StnPy(filepath)
     g.get_data(delimiter=",")
     g.create_stn(best_fit=global_best_fitness, use_best_fit_delta=True)
-    return g.get_ntotal(), g.get_altered_nshared()
+    return g.get_ntotal(), g.get_nbest(), g.get_altered_nshared(), g.get_best_strength()
 
 
 def process_interaction_network(filepath: str, solution_index: int, total_iterations: int) -> (float, float, float):

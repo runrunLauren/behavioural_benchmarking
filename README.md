@@ -1,30 +1,49 @@
+# "Survey and analysis of metaheuristic search behavior characterization: a case study on Particle Swarm Optimization variants"
+
+All the code used to calculate and analyse the indicators for the paper as titled above is contained in the folder 
+`/paper_related_files`. 
+The file `indicator_calculation.ipynb` processes the raw experiment data into search behaviour indicators, which are saved 
+to a CSV file.
+It also explains how to make use of the raw experiment data provided at [Zenodo](https://zenodo.org/records/14917336?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImM0YzVmNDhkLWZmNzMtNGJmMi05ZGU0LTY0NDQzMTRiYzdjNiIsImRhdGEiOnt9LCJyYW5kb20iOiJkMjg0YmI1ZGJiM2ZlYzY2YzQzZjljMGNmZTdmYTUyNyJ9.TTB5ayu4Pg7W7am4h66z4V7WnMNLEyOu5QQ_fvK5T4Ir4JkdFVqnjI9bF0PM1fZPQKoHelTsj8G3VFZYrUj_cQ).
+The file `RQ1.ipynb` evaluates RQ1 in the paper, namely 'Does the indicator distinguish between 
+metaheuristics exhibiting different behaviour?'
+The results from the statistical tests in RQ1 are provided in `RQ1_KS_results.csv`.
+The file `RQ2.ipynb` evaluates RQ2 in the paper, namely 'Is the indicator distinct from all other indicators?'
+The results from the statistical tests in RQ2 are provided in `RQ2_Pearson_results.csv`.
+
+---
+
 # Numerical indicators of the search behaviour of metaheuristics
 
-This repository contains code for the calculation of 15 numerical indicators 
+This repository contains code for the calculation of 25 numerical indicators 
 of algorithm search behaviour. For details on these indicators, refer to the 
 citation: (under review).
 
 The indicators included here are:
 
-- Diversity Rate of Change Type A (DRoC Type A)
-- ERT Diversity
-- Critical Diversity
-- Fitness Rate of Change Type B (FRoC Type B)
-- Critical Fitness
-- Mobility Rate of Change Type B (MRoC Type B)
-- ERT Mobility
-- Critical Mobility
-- ntotal (via [stnpy](https://github.com/runrunLauren/stnpy))
-- nshared (via [stnpy](https://github.com/runrunLauren/stnpy))
-- Mean Interaction Diversity (Mean ID) (with help from [Interaction Networks](https://github.com/macoj/swarm_interaction_network))
-- Mean Giant Component (Mean GC) (with help from [Interaction Networks](https://github.com/macoj/swarm_interaction_network))
-- Influence Strength of Solution (ISS) (with help from [Interaction Networks](https://github.com/macoj/swarm_interaction_network))
+- Diversity Rate of Change Type A and B (DRoC Type A, DRoC Type B)
+- ERT Diversity, Critical Diversity
+- Fitness Rate of Change (FRoC Type A,  ARoC B)
+- ERT Fitness, Critical Fitness
+- Separation Rate of Change (SRoC) (Types A and B)
+- ERT Separation, Critical Separation
+- Mobility Rate of Change (SRoC) (Types A and B)
+- ERT Mobility, Critical Mobility
+- ntotal, nbest, nshared, best-strength (via [stnpy](https://github.com/runrunLauren/stnpy))
+- Mean Interaction Diversity (Mean ID), Mean Giant Component (Mean GC), Influence Strength of Solution (ISS) (with help from [Interaction Networks](https://github.com/macoj/swarm_interaction_network))
 - EXPLORE%
 - INFEASIBLE%
+ 
+## Quickstart
+
+There is a simple Jupyter notebook used for testing the indicators, namely
+`illustrate_and_test.ipynb`. This illustrates where the indicators come 
+from, and also shows all the `get_` functions.
+
 
 ## Data preparation
 
-There are a couple of files required. See `example_data/` for an instance of 
+There are a couple of files required to calculate all the indicators. See `example_data/` for an instance of 
 each file required. For the purposes of explaining the files, assume that you
 have run a metaheuristic on a minimising benchmark problem, logging 
 information along the way.
@@ -38,6 +57,11 @@ fitness value in the benchmark problem landscape (`global_best_fitness`), and
 the position of the final solution of the experiment w.r.t. the population (`
 solution_index`).
 
+### diversity.csv, separation.csv, fitness.csv, mobility.csv
+
+These three files are very similar in presentation and preparation. Each csv
+file contains three columns. The first is "iteration" and the second 
+corresponds to either "diversity", "separation", or "fitness". 
 ### diversity.csv, fitness.csv, mobility.csv, f_percent.csv
 
 These four files are very similar in presentation and preparation. Each csv
@@ -48,8 +72,9 @@ At the end of every iteration of the experiment, you calculate the diversity
 of the population. Refer to the paper for more information on diversity 
 measures. The iteration and diversity are logged to `diversity.csv`.
 
-Similarly, at the end of every iteration, the current best known fitness value is 
-logged to `fitness.csv`.
+Similarly, at the end of every iteration, the current shortest known distance 
+to the global best position is logged to `separation.csv`. And to mirror this, 
+the current best known fitness value is logged to `fitness.csv`.
 When the best known fitness value is updated, then the distance between the location 
 of the previous best known fitness value, and the location of the new best known 
 fitness value, is logged to `mobility.csv`.
@@ -157,10 +182,3 @@ Resulting in an `interaction.txt` file like:
 ig:#0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 ig:#1 4 2 12 0 7 10 0 8 0 0 0 16 0 0 10 9 0 1 0 0 1 3 0 0 1
 ```
- 
-## Quickstart
-
-There is a simple Jupyter notebook used for testing the indicators, namely
-`illustrate_and_test.ipynb`. This illustrates where the indicators come 
-from, and also shows all the `get_` functions.
-

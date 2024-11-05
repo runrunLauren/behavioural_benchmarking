@@ -14,21 +14,33 @@ class MemoisedIndicators:
 
         # Diversity
         self.DRoC_A = None  # Diversity Rate of Change Type A
+        self.DRoC_B = None  # Diversity Rate of Change Type B
         self.ERT_Diversity = None  # Estimated Running Time wrt Diversity
         self.Critical_Diversity = None
 
+        # Separation
+        self.SRoC_A = None  # Separation Rate of Change Type A
+        self.SRoC_B = None  # Separation Rate of Change Type B
+        self.ERT_Separation = None  # Estimated Running Time wrt Separation
+        self.Critical_Separation = None
+
         # Fitness
+        self.FRoC_A = None  # Fitness Rate of Change Type A
         self.FRoC_B = None  # Fitness Rate of Change Type B
+        self.ERT_Fitness = None  # Estimated Running Time wrt Fitness
         self.Critical_Fitness = None
 
         # Mobility
+        self.MRoC_A = None  # Mobility Rate of Change Type A
         self.MRoC_B = None  # Mobility Rate of Change Type B
         self.ERT_Mobility = None  # Estimated Running Time wrt Mobility
         self.Critical_Mobility = None
 
         # STN
         self.ntotal = None  # Total number of nodes in the STN graph
+        self.nbest = None  # Number of nodes in the STN graph that are optimal
         self.nshared = None  # Number of nodes visited more than once
+        self.best_strength = None  # The sum of the normalised in-degree of all the optimal nodes
 
         # IN
         self.MID = None  # Mean Interaction Diversity
@@ -45,38 +57,47 @@ class MemoisedIndicators:
             return int(data["total_iterations"]), float(data["global_best_fitness"]), int(data["solution_index"])
 
     def __process_diversity(self):
-        self.DRoC_A, _, self.ERT_Diversity, self.Critical_Diversity = process_regression_indicator(
+        self.DRoC_A, self.DRoC_B, self.ERT_Diversity, self.Critical_Diversity = process_regression_indicator(
             f"{self.path}/diversity.csv",
             x_label="iteration",
             y_label="diversity",
             slope_indices=[0, 1]
         )
-        return self.DRoC_A, self.ERT_Diversity, self.Critical_Diversity
+        return self.DRoC_A, self.DRoC_B, self.ERT_Diversity, self.Critical_Diversity
+
+    def __process_separation_delta(self):
+        self.SRoC_A, self.SRoC_B, self.ERT_Separation, self.Critical_Separation = process_regression_indicator(
+            f"{self.path}/separation.csv",
+            x_label="iteration",
+            y_label="separation",
+            slope_indices=[0, 1]
+        )
+        return self.SRoC_A, self.SRoC_B, self.ERT_Separation, self.Critical_Separation
 
     def __process_fitness_delta(self):
-        _, self.FRoC_B, _, self.Critical_Fitness = process_regression_indicator(
+        self.FRoC_A, self.FRoC_B, self.ERT_Fitness, self.Critical_Fitness = process_regression_indicator(
             f"{self.path}/fitness.csv",
             x_label="iteration",
             y_label="fitness",
             slope_indices=[0, 1]
         )
-        return self.FRoC_B, self.Critical_Fitness
+        return self.FRoC_A, self.FRoC_B, self.ERT_Fitness, self.Critical_Fitness
 
     def __process_mobility(self):
-        _, self.MRoC_B, self.ERT_Mobility, self.Critical_Mobility = process_regression_indicator(
+        self.MRoC_A, self.MRoC_B, self.ERT_Mobility, self.Critical_Mobility = process_regression_indicator(
             f"{self.path}/mobility.csv",
             x_label="iteration",
             y_label="mobility",
             slope_indices=[0, 1]
         )
-        return self.MRoC_B, self.ERT_Mobility, self.Critical_Mobility
+        return self.MRoC_A, self.MRoC_B, self.ERT_Mobility, self.Critical_Mobility
 
     def __process_trajectories(self):
-        self.ntotal, self.nshared = process_search_trajectory_network(
+        self.ntotal, self.nbest, self.nshared, self.best_strength = process_search_trajectory_network(
             filepath=f"{self.path}/stn.csv",
             global_best_fitness=self.global_best_fitness
         )
-        return self.ntotal, self.nshared
+        return self.ntotal, self.nbest, self.nshared, self.best_strength
 
     def __process_interactions(self):
         self.MID, self.MGC, self.SNID = process_interaction_network(
@@ -89,32 +110,62 @@ class MemoisedIndicators:
     def get_DRoC_A(self) -> float:
         return self.DRoC_A if self.DRoC_A else self.__process_diversity()[0]
 
+    def get_DRoC_B(self) -> float:
+        return self.DRoC_B if self.DRoC_B else self.__process_diversity()[1]
+
     def get_ERT_Diversity(self) -> float:
-        return self.ERT_Diversity if self.ERT_Diversity else self.__process_diversity()[1]
+        return self.ERT_Diversity if self.ERT_Diversity else self.__process_diversity()[2]
 
     def get_Critical_Diversity(self) -> float:
-        return self.Critical_Diversity if self.Critical_Diversity else self.__process_diversity()[2]
+        return self.Critical_Diversity if self.Critical_Diversity else self.__process_diversity()[3]
+
+    def get_SRoC_A(self) -> float:
+        return self.SRoC_A if self.SRoC_A else self.__process_separation_delta()[0]
+
+    def get_SRoC_B(self) -> float:
+        return self.SRoC_B if self.SRoC_B else self.__process_separation_delta()[1]
+
+    def get_ERT_Separation(self) -> float:
+        return self.ERT_Separation if self.ERT_Separation else self.__process_separation_delta()[2]
+
+    def get_Critical_Separation(self) -> float:
+        return self.Critical_Separation if self.Critical_Separation else self.__process_separation_delta()[3]
+
+    def get_FRoC_A(self) -> float:
+        return self.FRoC_A if self.FRoC_A else self.__process_fitness_delta()[0]
 
     def get_FRoC_B(self) -> float:
-        return self.FRoC_B if self.FRoC_B else self.__process_fitness_delta()[0]
+        return self.FRoC_B if self.FRoC_B else self.__process_fitness_delta()[1]
+
+    def get_ERT_Fitness(self) -> float:
+        return self.ERT_Fitness if self.ERT_Fitness else self.__process_fitness_delta()[2]
 
     def get_Critical_Fitness(self) -> float:
-        return self.Critical_Fitness if self.Critical_Fitness else self.__process_fitness_delta()[1]
+        return self.Critical_Fitness if self.Critical_Fitness else self.__process_fitness_delta()[3]
+
+    def get_MRoC_A(self) -> float:
+        return self.MRoC_A if self.MRoC_A else self.__process_mobility()[0]
 
     def get_MRoC_B(self) -> float:
-        return self.MRoC_B if self.MRoC_B else self.__process_mobility()[0]
+        return self.MRoC_B if self.MRoC_B else self.__process_mobility()[1]
 
     def get_ERT_Mobility(self) -> float:
-        return self.ERT_Mobility if self.ERT_Mobility else self.__process_mobility()[1]
+        return self.ERT_Mobility if self.ERT_Mobility else self.__process_mobility()[2]
 
     def get_Critical_Mobility(self) -> float:
-        return self.Critical_Mobility if self.Critical_Mobility else self.__process_mobility()[2]
+        return self.Critical_Mobility if self.Critical_Mobility else self.__process_mobility()[3]
 
     def get_ntotal(self):
         return self.ntotal if self.ntotal else self.__process_trajectories()[0]
 
+    def get_nbest(self):
+        return self.nbest if self.nbest else self.__process_trajectories()[1]
+
     def get_nshared(self) -> float:
-        return self.nshared if self.nshared else self.__process_trajectories()[1]
+        return self.nshared if self.nshared else self.__process_trajectories()[2]
+
+    def get_best_strength(self) -> float:
+        return self.best_strength if self.best_strength else self.__process_trajectories()[3]
 
     def get_MID(self) -> float:
         return self.MID if self.MID else self.__process_interactions()[0]
