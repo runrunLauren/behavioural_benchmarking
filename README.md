@@ -2,13 +2,13 @@
 
 This repository contains code for the calculation of 25 numerical indicators 
 of algorithm search behaviour. For details on these indicators, refer to the 
-citation: (To be submitted).
+citation: (under review).
 
 The indicators included here are:
 
-- Diversity Rate of Change Type A and B (DRoC Type A, DRoC Type B)
+- Diversity Rate of Change Type A and B (DRoC) (Types A and B)
 - ERT Diversity, Critical Diversity
-- Fitness Rate of Change (FRoC Type A,  ARoC B)
+- Fitness Rate of Change (FRoC) (Types A and B)
 - ERT Fitness, Critical Fitness
 - Separation Rate of Change (SRoC) (Types A and B)
 - ERT Separation, Critical Separation
@@ -18,19 +18,6 @@ The indicators included here are:
 - Mean Interaction Diversity (Mean ID), Mean Giant Component (Mean GC), Influence Strength of Solution (ISS) (with help from [Interaction Networks](https://github.com/macoj/swarm_interaction_network))
 - EXPLORE%
 - INFEASIBLE%
-
-## IEEE TETCI
-
-The archived, raw experiment data made available with the paper should be extracted to a folder at the same level as the
-root of this project, in a folder named `fresh_results`.
-
-All the code used to calculate and analyse the indicators for the paper submitted to TETCI is contained in the folder 
-`/IEEE_TETCI`. 
-The file `run_experiments.ipynb` processed the raw experiment data in `fresh_results` into indicators, which are saved 
-to a CSV file.
-The file `IndicatorDifferentBehaviour.ipynb` tests RQ1 in the paper, namely 'Does the indicator distinguish between 
-metaheuristics exhibiting different behaviour?'
-The file `IndicatorDistinct.ipynb` tests RQ2 in the paper, namely 'Is the indicator distinct from all other indicators?'
 
 ## Data preparation
 
