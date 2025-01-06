@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Optional
 import numpy as np
 import pwlf
 import pandas as pd
 
 
 def process_regression_indicator(filepath: str, x_label: str, y_label: str, slope_indices: List[int]) \
-        -> List[float]:
+        -> List[Optional[float]]:
     """
     Calculates any of the regression-based indicators, namely the Rate of Change indicators, ERT indicators and Critical
      value indicators
@@ -17,6 +17,8 @@ def process_regression_indicator(filepath: str, x_label: str, y_label: str, slop
     :return: the values of the slopes at the slope-indices given, and the coordinates of the knee point
     """
     df = pd.read_csv(filepath, engine='c', encoding="utf-8-sig")
+    if len(df.index) == 0:
+        return [None] * (len(slope_indices) + 2)
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     df.dropna(axis=0, how='any', inplace=True)
     x = df[x_label]

@@ -4,7 +4,7 @@ from behavioural_benchmark.regression_indicators import process_regression_indic
 from behavioural_benchmark.network_indicators import process_search_trajectory_network, process_interaction_network
 from behavioural_benchmark.mean_indicators import explore_percent, infeasible_percent
 
-class MemoisedIndicators:
+class Indicators:
 
     def __init__(self, path):
         # root of data files
@@ -18,10 +18,10 @@ class MemoisedIndicators:
         self.Critical_Diversity = None
 
         # Fitness
-        self.FRoC_B = None  # Fitness Rate of Change Type B
         self.Critical_Fitness = None
 
         # Mobility
+        self.MRoC_B = None  # Mobility Rate of Change Type B
         self.Critical_Mobility = None
 
         # STN
@@ -52,22 +52,22 @@ class MemoisedIndicators:
         return self.DRoC_A, self.ERT_Diversity, self.Critical_Diversity
 
     def __process_fitness_delta(self):
-        _, self.FRoC_B, _, self.Critical_Fitness = process_regression_indicator(
+        _, _, _, self.Critical_Fitness = process_regression_indicator(
             f"{self.path}/fitness.csv",
             x_label="iteration",
             y_label="fitness",
             slope_indices=[0, 1]
         )
-        return self.FRoC_B, self.Critical_Fitness
+        return self.Critical_Fitness
 
     def __process_mobility(self):
-        _, _, _, self.Critical_Mobility = process_regression_indicator(
+        _, self.MRoC_B, _, self.Critical_Mobility = process_regression_indicator(
             f"{self.path}/mobility.csv",
             x_label="iteration",
             y_label="mobility",
             slope_indices=[0, 1]
         )
-        return self.Critical_Mobility
+        return self.MRoC_B, self.Critical_Mobility
 
     def __process_trajectories(self):
         self.ntotal_star, self.nshared_star = process_search_trajectory_network(
@@ -93,14 +93,14 @@ class MemoisedIndicators:
     def get_Critical_Diversity(self) -> float:
         return self.Critical_Diversity if self.Critical_Diversity else self.__process_diversity()[2]
 
-    def get_FRoC_B(self) -> float:
-        return self.FRoC_B if self.FRoC_B else self.__process_fitness_delta()[0]
-
     def get_Critical_Fitness(self) -> float:
-        return self.Critical_Fitness if self.Critical_Fitness else self.__process_fitness_delta()[3]
+        return self.Critical_Fitness if self.Critical_Fitness else self.__process_fitness_delta()
+
+    def get_MRoC_B(self) -> float:
+        return self.MRoC_B if self.MRoC_B else self.__process_mobility()[0]
 
     def get_Critical_Mobility(self) -> float:
-        return self.Critical_Mobility if self.Critical_Mobility else self.__process_mobility()[2]
+        return self.Critical_Mobility if self.Critical_Mobility else self.__process_mobility()[1]
 
     def get_ntotal_star(self):
         return self.ntotal_star if self.ntotal_star else self.__process_trajectories()[0]
@@ -130,4 +130,3 @@ class MemoisedIndicators:
         else:
             self.INFEASIBLE_percent = infeasible_percent(filepath=f"{self.path}/f_percent.csv")
             return self.INFEASIBLE_percent
-

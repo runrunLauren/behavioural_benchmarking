@@ -3,8 +3,8 @@ import pandas as pd
 import time
 
 def check_correctness():
-    STN_R_values = pd.read_csv("resources/STN_R_easy_results.csv")
-    g = StnPy("resources/easy.txt")
+    STN_R_values = pd.read_csv("resources/stnpy/STN_R_easy_results.csv")
+    g = StnPy("resources/stnpy/easy.txt")
     g.get_data(delimiter=",")
     g.create_stn(best_fit=0, use_best_fit_delta=False)
     assert g.get_ntotal() == STN_R_values.loc[0]["ntotal"]
@@ -24,7 +24,7 @@ def check_correctness():
 
 
 def run_one_run():
-    g = StnPy("resources/easy.txt")
+    g = StnPy("resources/stnpy/easy.txt")
     g.get_data(delimiter=",", run_numbers=[1])
     g.create_stn(best_fit=0, use_best_fit_delta=False)
     print("ntotal: ", g.get_ntotal(), ", etotal: ", g.get_etotal(), ", nbest: ", g.get_nbest(),
@@ -33,7 +33,7 @@ def run_one_run():
 
 
 def run_two_runs():
-    g = StnPy("resources/easy.txt")
+    g = StnPy("resources/stnpy/easy.txt")
     g.get_data(delimiter=",", run_numbers=[1, 3])
     g.create_stn(best_fit=0, use_best_fit_delta=False)
     print("ntotal: ", g.get_ntotal(), ", etotal: ", g.get_etotal(), ", nbest: ", g.get_nbest(),
@@ -42,7 +42,7 @@ def run_two_runs():
 
 
 def run_big_file():
-    g = StnPy("resources/stn.csv")
+    g = StnPy("resources/stnpy/stn.csv")
     g.get_data(delimiter=",", run_numbers=[1, 2])
     g.create_stn(best_fit=0, use_best_fit_delta=True)
     print("ntotal: ", g.get_ntotal(), ", etotal: ", g.get_etotal(), ", nbest: ", g.get_nbest(),

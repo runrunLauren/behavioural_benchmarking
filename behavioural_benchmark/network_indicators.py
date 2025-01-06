@@ -41,7 +41,7 @@ def process_interaction_network(filepath: str, solution_index: int, total_iterat
     size_of_largest_subgraph = GiantComponentDeath.low_edges_weight_removal(igraph_graph=graph, count='size')[0]
     mean_gc = np.mean(size_of_largest_subgraph['y'])
 
-    # ISS
-    influence_strength_of_solution = graph.strength(solution_index, weights="weight")
+    # solution node in degree
+    snid = graph.strength(solution_index, weights="weight")
 
-    return float(mean_id), float(mean_gc), float(influence_strength_of_solution)
+    return float(mean_id), float(mean_gc), float(snid)

@@ -1,29 +1,30 @@
 # Numerical indicators of the search behaviour of metaheuristics
 
-This repository contains code for the calculation of 25 numerical indicators 
-of algorithm search behaviour. For details on these indicators, refer to the 
+This repository contains code for the calculation of 13 numerical indicators 
+of metaheuristic search behaviour. For details on these indicators, refer to the 
 citation: (under review).
 
 The indicators included here are:
 
-- Diversity Rate of Change Type A and B (DRoC) (Types A and B)
-- ERT Diversity, Critical Diversity
-- Fitness Rate of Change (FRoC) (Types A and B)
-- ERT Fitness, Critical Fitness
-- Separation Rate of Change (SRoC) (Types A and B)
-- ERT Separation, Critical Separation
-- Mobility Rate of Change (SRoC) (Types A and B)
-- ERT Mobility, Critical Mobility
-- ntotal, nbest, nshared, best-strength (via [stnpy](https://github.com/runrunLauren/stnpy))
-- Mean Interaction Diversity (Mean ID), Mean Giant Component (Mean GC), Influence Strength of Solution (ISS) (with help from [Interaction Networks](https://github.com/macoj/swarm_interaction_network))
+- Diversity Rate of Change Type A (DRoC Type A)
+- ERT Diversity
+- Critical Diversity
+- Critical Fitness
+- Mobility Rate of Change Type B (MRoC Type B)
+- Critical Mobility
+- ntotal* (adjusted version of ntotal)  
+- nshared* (adjusted version of nshared)
+- Mean Interaction Diversity (Mean ID) (with help from [Interaction Networks](https://github.com/macoj/swarm_interaction_network))
+- Mean Giant Component (Mean GC) (with help from [Interaction Networks](https://github.com/macoj/swarm_interaction_network))
+- Solution node in-degree (SNID) (with help from [Interaction Networks](https://github.com/macoj/swarm_interaction_network))
 - EXPLORE%
 - INFEASIBLE%
 
 ## Data preparation
 
-There are a couple of files required. See `example_data/` for an instance of 
+There are a couple of files required. See `tst/resources/example_data/` for an instance of 
 each file required. For the purposes of explaining the files, assume that you
-have run a metaheuristic on a minimising benchmark problem, logging 
+have run a metaheuristic on a minimising benchmark function, logging 
 information along the way.
 
 ### metadata.json
@@ -35,34 +36,42 @@ fitness value in the benchmark problem landscape (`global_best_fitness`), and
 the position of the final solution of the experiment w.r.t. the population (`
 solution_index`).
 
-### diversity.csv, separation.csv, fitness.csv, mobility.csv
+### diversity.csv, fitness.csv, mobility.csv, f_percent.csv
 
-These three files are very similar in presentation and preparation. Each csv
-file contains three columns. The first is "iteration" and the second 
-corresponds to either "diversity", "separation", or "fitness". 
+These four files are very similar in presentation and preparation. Each csv
+file contains three columns. The first column is "iteration", and the second column  
+corresponds to either "diversity", "fitness", "mobility", or "f_percent". 
 
 At the end of every iteration of the experiment, you calculate the diversity 
 of the population. Refer to the paper for more information on diversity 
 measures. The iteration and diversity are logged to `diversity.csv`.
 
-Similarly, at the end of every iteration, the current shortest known distance 
-to the global best position is logged to `separation.csv`. And to mirror this, 
-the current best known fitness value is logged to `fitness.csv`.
+Similarly, at the end of every iteration, the current best known fitness value is 
+logged to `fitness.csv`.
+When the best known fitness value is updated, then the distance between the location 
+of the previous best known fitness value, and the location of the new best known 
+fitness value, is logged to `mobility.csv`.
+
+Every iteration, the `F%` of the population is calculated. Please refer to the paper 
+for information on calculating `F%`.
+This value is logged to `f_percent.csv`.
 
 These files contain a single run each.
 
 ### stn.csv
 
-For the Search Trajectory Networks (STN), the `stnpy` 
-[package](https://github.com/runrunLauren/stnpy) is used. The file format 
-follows the style given in the original publication, see 
-[here](https://github.com/gabro8a/STNs). This style is csv with columns:
+For the Search Trajectory Networks (STN) there is a class named `StnPy`. The class 
+follows the directions of the original publication, see 
+[here](https://github.com/gabro8a/STNs). The format of the file also follows the 
+format of the original publication. This style is csv with columns:
 
 `Run,Fitness1,Solution1,Fitness2,Solution2`.
 
-Traditionally STNs expect multiple runs of single individuals to be used. 
-This is equivalent to a single run of multiple individuals. As such, log 
-each individual as if it is its own run, with its index within the 
+Traditionally, STNs expect multiple runs of single individuals to be used. 
+In order to create an STN with only a single run, an adaptation is made.
+This adaptation is to consider each individual in the population as a "run" 
+when calculating the STN.
+As such, log each individual as if it is its own run, with its index within the 
 population serving as it's run number.
 
 For each individual in the population, each move it makes must be logged. 
@@ -89,19 +98,6 @@ All positions will now look something like `A = [12, 30, 90]`, which can be
 padded with zeroes and transformed to be a unique position identifier:
 
 `012030090`
-
-### f_percent.csv
-
-It also contains an entry named `infeasible_iterations`. This is a tally of 
-the number of iterations spent in infeasible space. You tally this by 
-counting the share of the population outside feasible space each iteration.
-E.g, when calculated for 10 individuals for 5 iterations:
-- t=0: 1 individual out of bounds = 1/10 iterations
-- t=1: 2 out of bounds = 2/10
-- t=2: 0 out of bounds = 0
-- t=3: 4 out of bounds = 4/10
-- t=4: 10 out of bounds = 1
-Result: `infeasible_iterations: 1.6`
 
 ### interaction_network.txt
 
