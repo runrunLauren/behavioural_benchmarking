@@ -90,10 +90,10 @@ class MemoisedIndicators:
         return self.DRoC_A if self.DRoC_A else self.__process_diversity()[0]
 
     def get_ERT_Diversity(self) -> float:
-        return self.ERT_Diversity if self.ERT_Diversity else self.__process_diversity()[2]
+        return self.ERT_Diversity if self.ERT_Diversity else self.__process_diversity()[1]
 
     def get_Critical_Diversity(self) -> float:
-        return self.Critical_Diversity if self.Critical_Diversity else self.__process_diversity()[3]
+        return self.Critical_Diversity if self.Critical_Diversity else self.__process_diversity()[2]
 
     def get_FRoC_B(self) -> float:
         return self.FRoC_B if self.FRoC_B else self.__process_fitness_delta()[0]
@@ -114,7 +114,7 @@ class MemoisedIndicators:
         return self.ntotal if self.ntotal else self.__process_trajectories()[0]
 
     def get_nshared(self) -> float:
-        return self.nshared if self.nshared else self.__process_trajectories()[2]
+        return self.nshared if self.nshared else self.__process_trajectories()[1]
 
     def get_MID(self) -> float:
         return self.MID if self.MID else self.__process_interactions()[0]
