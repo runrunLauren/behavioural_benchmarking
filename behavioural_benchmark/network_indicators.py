@@ -1,5 +1,5 @@
 import numpy as np
-from stnpy import stn
+from behavioural_benchmark.stn import StnPy
 from swarm_interaction_network.swarm_analyzer import SwarmAnalyzer
 from swarm_interaction_network.giant_component_analysis import GiantComponentDeath
 
@@ -13,7 +13,7 @@ def process_search_trajectory_network(filepath: str, global_best_fitness: float)
     :param global_best_fitness: the best fitness value known in the optimisation space
     :return: the total number of nodes in the STN, the total number of shared nodes in the STN
     """
-    g = stn.StnPy(filepath)
+    g = StnPy(filepath)
     g.get_data(delimiter=",")
     g.create_stn(best_fit=global_best_fitness, use_best_fit_delta=True)
     return g.get_ntotal(), g.get_altered_nshared()
