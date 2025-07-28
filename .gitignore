@@ -1,3 +1,5 @@
 # IDE
 .idea/
 *.iml
+/behavioural_benchmark/tutorials/more_cognitive/
+/behavioural_benchmark/tutorials/more_social/
