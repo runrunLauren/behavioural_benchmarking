@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "behaviouralbenchmark"
+version = "1.0.0"
+authors = [
+  { name="Lauren Hayward", email="haywardlau@gmail.com" },
+]
+description = "Python implementation of several indicators of metaheuristic search behaviour."
+readme = "README.md"
+requires-python = ">=3.7"
+license = { file = "LICENSE" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "numpy",
+    "pwlf",
+    "pandas",
+    "jupyter",
+    "igraph",
+    "scikit-learn",
+    "matplotlib",
+    "seaborn",
+    "scipy"
+]
+
+
+[project.urls]
+"Homepage" = "https://github.com/runrunLauren/behavioural_benchmarking"
+"Bug Tracker" = "https://github.com/runrunLauren/behavioural_benchmarking/issues"

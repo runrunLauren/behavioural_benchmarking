@@ -20,6 +20,9 @@ The indicators included here are:
 - EXPLORE%
 - INFEASIBLE%
 
+**Important note:** You _must_ run `pip install git+https://github.com/runrunLauren/swarm_interaction_network@master` 
+before trying to use this package. This dependency is not available via PyPI, as so it is not installed by default.
+
 ## Data preparation
 
 There are a couple of files required. See `tst/resources/example_data/` for an instance of 
@@ -156,9 +159,14 @@ ig:#0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 ig:#1 4 2 12 0 7 10 0 8 0 0 0 16 0 0 10 9 0 1 0 0 1 3 0 0 1
 ```
  
-## Quickstart
+## Tutorials
 
 There is a simple Jupyter notebook used for testing the indicators, namely
-`illustrate_and_test.ipynb`. This illustrates where the indicators come 
+`tutorials/illustrate_and_test.ipynb`. This illustrates where the indicators come 
 from, and also shows all the `get_` functions.
+
+For a more interesting tutorial on comparing indicator values, please see `tutorials/comparison_guide.ipynb`.
+
+
+
 
